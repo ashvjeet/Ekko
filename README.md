@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ekko
 
 A new Flutter project.
@@ -17,3 +18,7 @@ samples, guidance on mobile development, and a full API reference.
 # Ekko
 # Ekko
 # Ekko-
+=======
+# Ekko
+Music Player of the Future
+>>>>>>> origin/main
