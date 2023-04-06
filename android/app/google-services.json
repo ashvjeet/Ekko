@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "865290267555",
+    "project_id": "ekko-d8ad2",
+    "storage_bucket": "ekko-d8ad2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865290267555:android:2632f0810fe6e098cbc816",
+        "android_client_info": {
+          "package_name": "com.example.ekko"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "865290267555-ese1faaprbp35a6deck5fiseu4jp6ouc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxsTEaFzxGMUD2RKgvhraLWO7CmQRvDtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "865290267555-ese1faaprbp35a6deck5fiseu4jp6ouc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
