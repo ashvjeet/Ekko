@@ -54,7 +54,7 @@ class _MyAppState extends State <MyApp> {
             Container(
               padding: EdgeInsets.only(left: 10, top: 8, bottom: 8),
               width: 100,
-              height: 55,
+              height: 54,
               child: Marquee(
                 child: Column(
                   children: [
