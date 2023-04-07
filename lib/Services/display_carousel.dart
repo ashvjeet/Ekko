@@ -19,7 +19,7 @@ Future<CarouselSlider> getCarousel() async {
       viewportFraction: 0.466,
       enableInfiniteScroll: true,
       autoPlayInterval: Duration(seconds: 5),
-      autoPlayAnimationDuration: Duration(milliseconds: 2000),
+      autoPlayAnimationDuration: Duration(milliseconds: 200),
       pauseAutoPlayOnTouch: true,
       scrollDirection: Axis.horizontal,
       
