@@ -1,3 +1,4 @@
+import 'package:ekko/Screens/app.dart';
 import 'package:flutter/material.dart';
 import 'package:ekko/Services/display_carousel.dart';
 import 'package:ekko/Models/songs.dart';
@@ -10,64 +11,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Home extends StatelessWidget {
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('listeners');
   final int maxStackSize = 10;
-  final Function _minimizedPlayer;
+  Function setStateOfPlayer;
   User? user;
-  Home(this._minimizedPlayer,{required this.user}); //Dart Constructor Shorthand
-  /*Widget displayCategory(Category category){
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors:[
-            Colors.grey.shade200,
-            Colors.teal.shade100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            stops: [0.3,0.9]
-        ), 
-            borderRadius: BorderRadius.circular(15)
-      ),
-      alignment: Alignment.centerLeft,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(left: 20, top: 10, bottom: 5),
-            child: Text(category.name, style: TextStyle(color: Colors.grey[800], fontSize: 16, fontWeight: FontWeight.bold),),
-          ),
-          Expanded(
-            child: Padding(
-            padding: EdgeInsets.only(left: 20, top:5, bottom:20, right: 20),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(category.imageURL, fit:BoxFit.cover)
-              ),
-            )
-          )
-        ],
-      )
-    );
-  }
-
-  Widget displayGrid(){
-    return Container(
-      height: 200, 
-      child: GridView.count(
-        padding: EdgeInsets.all(20),
-        childAspectRatio: 5/2,
-        mainAxisSpacing: 10,
-        children: displayListOfCategories(),
-        crossAxisCount: 1,
-      ),
-    );
-  }
-
-  List<Widget> displayListOfCategories(){
-    List<Category> categoryList = CategoryOperations.getCategories();//Receive Data
-    // Convert Data to Widget using Map function
-    List<Widget> categories = categoryList.map((Category category)=>displayCategory(category)).toList();
-    return categories;
-  }*/
-
+  Home({required this.setStateOfPlayer, required this.user}); //Dart Constructor Shorthand
+  
   Widget displayCarousel(){
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 20, bottom: 10),
@@ -127,22 +74,22 @@ class Home extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               child: InkWell(
                 onTap: () async {
-                  DocumentSnapshot userSnapshot = await usersRef.doc(user!.uid).get();
-                  Map<dynamic, dynamic> userData = (userSnapshot.data() ?? {}) as Map<dynamic, dynamic>;
-                  List<String> stack = List<String>.from(userData['song_history'] ?? []);
-                  if (stack.length >= maxStackSize) {
+                    DocumentSnapshot userSnapshot = await usersRef.doc(user!.uid).get();
+                    Map<dynamic, dynamic> userData = (userSnapshot.data() ?? {}) as Map<dynamic, dynamic>;
+                    List<String> stack = List<String>.from(userData['song_history'] ?? []);
+                    if (stack.length >= maxStackSize) {
+                      await usersRef.doc(user!.uid).update({
+                        'song_history': FieldValue.arrayRemove([stack.last])
+                      });
+                    }
                     await usersRef.doc(user!.uid).update({
-                      'song_history': FieldValue.arrayRemove([stack.last])
+                      'song_history': FieldValue.arrayUnion([song.songID])
                     });
-                  }
-                  await usersRef.doc(user!.uid).update({
-                    'song_history': FieldValue.arrayUnion([song.songID])
-                  });
-                  SongOperations.incrementSongPlays(song.songID);
-                  _minimizedPlayer(song);
-                },
+                    SongOperations.incrementSongPlays(song.songID);
+                    MinimizedPlayer.song = song;
+                    setStateOfPlayer();
+                  },
                 onLongPress: () {
-                  
                 },
                 child: Image.network(song.songArt, fit: BoxFit.cover,)))),
         ),
