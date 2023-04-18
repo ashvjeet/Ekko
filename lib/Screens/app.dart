@@ -1,3 +1,5 @@
+import 'package:ekko/Screens/Login/login.dart';
+import 'package:ekko/Screens/Login/signup.dart';
 import 'package:ekko/Services/pause_play.dart';
 import 'package:ekko/Assets/Themes/style.dart';
 import 'package:ekko/Models/songs.dart';
@@ -30,7 +32,7 @@ class _TabState extends State<Tab> {
   void initState(){
     super.initState();
     navigationTabs = [Home(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
-    Search(), 
+    Search(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Library(), 
     Upload()
     ];
@@ -217,12 +219,55 @@ class MyApp extends StatefulWidget {
   
   @override
   State <MyApp> createState() => _MyAppState();
+
+  
 }
 
 class _MyAppState extends State <MyApp> {
   GlobalKey<_TabState> navTabKey = GlobalKey<_TabState>();
   GlobalKey<_MinimizedPlayerState> playerKey = GlobalKey<_MinimizedPlayerState>();
 
+  void _showMenu(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final menu = PopupMenuButton(
+      elevation: 10,
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          child: Row(
+            children: [
+              FaIcon(FontAwesomeIcons.user, size: 15,),
+              SizedBox(width: 10),
+              Text("Profile"),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          child: Row(
+            children: [
+              FaIcon(FontAwesomeIcons.doorOpen, size: 15,),
+              SizedBox(width: 10),
+              Text("Logout"),
+            ],
+          ),
+          onTap: () {
+            SignUp.auth.signOut().then((value) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => Login()),
+              ModalRoute.withName('/'));
+          });
+          }
+        ),
+      ],
+    );
+
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(screenWidth - 120, 80, 0, 0),
+      items: menu.itemBuilder(context),
+    );
+}
 
   @override
   void initState(){
@@ -246,9 +291,13 @@ class _MyAppState extends State <MyApp> {
           title: appLogo,
           centerTitle: false,
           actions: [
-            Padding(
-              padding: EdgeInsets.only(right: 15.0, top: 15.0),
+            FloatingActionButton(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
               child: FaIcon(FontAwesomeIcons.solidUser, color: Colors.black, size: 22,),
+              onPressed: () {
+                _showMenu(context);
+              },
             ), 
           ], 
         ),
@@ -266,3 +315,6 @@ class _MyAppState extends State <MyApp> {
     );
   }
 }
+
+
+

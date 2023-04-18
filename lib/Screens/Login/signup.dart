@@ -9,7 +9,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 
 class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+  SignUp({super.key});
+  static final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   State<SignUp> createState() => _SignUpState();
@@ -18,18 +19,16 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   TextEditingController _nameController = new TextEditingController();
   TextEditingController _emailController = new TextEditingController();
-  final FirebaseAuth auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+
   Future<UserCredential> signInWithGoogle() async {
     final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount!.authentication;
     final OAuthCredential googleAuthCredential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication.accessToken, 
       idToken: googleSignInAuthentication.idToken);
-
-    return await auth.signInWithCredential(googleAuthCredential);
+    return await SignUp.auth.signInWithCredential(googleAuthCredential);
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -124,15 +123,15 @@ class _SignUpState extends State<SignUp> {
                               right: 25, 
                               bottom: 5
                             ),
-                            child: customButton('SIGN UP',() async{
+                            child: customButton('SIGN UP',() async {
                               var acs = ActionCodeSettings(
-                                url: 'https://ekko.page.link/qL6j',
+                                url: 'https://ekko.page.link/getstarted',
                                 handleCodeInApp: true,
                                 iOSBundleId: 'com.example.ekko',
                                 androidPackageName: 'com.example.ekko',
                                 androidInstallApp: true,
                                 androidMinimumVersion: '12');
-
+                                
                               await FirebaseAuth.instance.sendSignInLinkToEmail(
                                 email: _emailController.text, 
                                 actionCodeSettings: acs).catchError((onError) => Text('Error sending email verification $onError')).then((value) => {
