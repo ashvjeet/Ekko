@@ -68,7 +68,6 @@ class AudioManager{
     if (_audioPlayer.playing) {
      await _audioPlayer.stop();
     }
-    
     await _audioPlayer.setUrl(url);
     await _audioPlayer.play();
   }

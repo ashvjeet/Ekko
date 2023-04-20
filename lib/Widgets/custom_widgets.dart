@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 
 
 
-TextField customTextField(String text, IconData icon, bool isPasswordType, TextEditingController controller){
-  return TextField(
+TextFormField customTextField(String text, IconData icon, bool isNameType, TextEditingController controller,){
+  return TextFormField(
     onTap: ()=>{},
     controller: controller,
-    obscureText: isPasswordType,
-    enableSuggestions: isPasswordType,
-    autocorrect: !isPasswordType,
+    autocorrect: !isNameType,
+    validator: (value) {
+      if (value!.isEmpty && !isNameType) return "Email cannot be empty";
+      if (value.isEmpty && isNameType) return "Name cannot be empty";
+      return null;
+    },
     cursorColor: Colors.grey[800],
     style: TextStyle(
       color: Colors.grey.shade800.withOpacity(0.9)),
@@ -31,8 +34,8 @@ TextField customTextField(String text, IconData icon, bool isPasswordType, TextE
         ),
       ),
     ),
-    keyboardType: isPasswordType 
-    ? TextInputType.visiblePassword
+    keyboardType: isNameType 
+    ? TextInputType.name
     : TextInputType.emailAddress,
   );
 }

@@ -3,9 +3,9 @@ class Artist{
   String artistEmail;
   String artistDPURL;
   String artistType;
-  String artistDesc;
+  String artistBio;
   String artistCountry;
   int artistPlays;
   int artistLikes;
-  Artist(this.artistName, this.artistEmail, this.artistDPURL, this.artistType, this.artistDesc, this.artistCountry, this.artistPlays, this.artistLikes);
+  Artist(this.artistName, this.artistEmail, this.artistDPURL, this.artistType, this.artistBio, this.artistCountry, this.artistPlays, this.artistLikes);
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ekko/Screens/Login/artist_signup.dart';
 import 'package:ekko/Screens/app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _SignUpState extends State<SignUp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-     if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed) {
       retrieveDynamicLink();
     }
   }
@@ -209,8 +210,7 @@ class _SignUpState extends State<SignUp> with WidgetsBindingObserver {
                   padding: const EdgeInsets.only(left: 15, right: 15),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[100], 
-                      backgroundBlendMode: BlendMode.multiply, 
+                      color: Colors.grey[200], 
                       borderRadius: BorderRadius.circular(40)
                     ),
                     child: Center(
@@ -350,7 +350,7 @@ class _SignUpState extends State<SignUp> with WidgetsBindingObserver {
                                   ),
                                   GestureDetector(
                                     onTap: () => {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()))
+                                          Navigator.push(context, MaterialPageRoute(builder: (context) => ArtistSignUp()))
                                         },
                                     child: Text(' Ekko Artist', style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold ),),
                                   )

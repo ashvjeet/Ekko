@@ -3,6 +3,7 @@ import 'package:ekko/Widgets/custom_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ekko/Screens/Login/signup.dart';
 import 'package:ekko/Screens/app.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 class Login extends StatefulWidget {
@@ -13,8 +14,50 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: StreamBuilder<User?>(
+        stream: SignUp.auth.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            User? user = snapshot.data;
+            if (user == null) {
+              return LoginPage();
+            }
+            return MyApp();
+          } else {
+            return Text('Unable to Login');
+          }
+        },
+      ),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
+
+  TextEditingController emailController = TextEditingController();
+  
+
+  @override
+  void initState(){
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
@@ -78,73 +121,85 @@ class _LoginState extends State<Login> {
                   padding: const EdgeInsets.only(left: 15, right: 15),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[100], 
-                      backgroundBlendMode: BlendMode.multiply, 
+                      color: Colors.grey[200], 
                       borderRadius: BorderRadius.circular(40)
                     ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget> [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: 20, 
-                              left: 25, 
-                              right: 25
-                            ),
-                            child: customTextField(
-                              'Email', 
-                              FontAwesomeIcons.solidUser, 
-                              false, 
-                              _emailController
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(40,25,10,0),
+                          child: Text('Enter your Email,',
+                            style: TextStyle(
+                              fontSize: 14, 
+                              fontWeight: FontWeight.bold, 
+                              color: Colors.teal[300],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: 20, 
-                              left: 25, 
-                              right: 25
-                            ),
-                            child: customTextField(
-                              'Password', 
-                              FontAwesomeIcons.key, 
-                              true, 
-                              _passwordController
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(40,0,10,0),
+                          child: Text('You will receive a link to login',
+                          style: TextStyle(
+                              fontSize: 14, 
+                              fontWeight: FontWeight.bold, 
+                              color: Colors.grey[600],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: 30, 
-                              left: 25, 
-                              right: 25, 
-                              bottom: 30
-                            ),
-                            child: customButton('LOG IN', (){ 
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));}),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                            bottom: 20
-                            ),
-                            child: Row(
+                        ),
+                        Center(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'New to Ekko ?', 
-                                style: TextStyle(
-                                  fontSize: 12
+                            children: <Widget> [
+                             
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 20, 
+                                  left: 25, 
+                                  right: 25
+                                ),
+                                child: customTextField(
+                                  'Email', 
+                                  FontAwesomeIcons.solidUser, 
+                                  false, 
+                                  emailController
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () => {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()))
-                                },
-                                child: Text(' Sign Up', style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold ),),
-                              )
-                           ],),
-                         )
-                        ],
-                      ) 
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 30, 
+                                  left: 25, 
+                                  right: 25, 
+                                  bottom: 30
+                                ),
+                                child: customButton('LOG IN', (){ 
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));}),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                bottom: 20
+                                ),
+                                child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'New to Ekko?', 
+                                    style: TextStyle(
+                                      fontSize: 12
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()))
+                                    },
+                                    child: Text(' Sign Up', style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold ),),
+                                  )
+                               ],),
+                             )
+                            ],
+                          ) 
+                        ),
+                      ],
                     ),
                   ),
                 ),
