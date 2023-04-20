@@ -24,10 +24,9 @@ class Tab extends StatefulWidget {
 }
 
 class _TabState extends State<Tab> {
-  User? user = FirebaseAuth.instance.currentUser;
+  User? user = SignUp.auth.currentUser;
   var navigationTabs = [];
   
-
   @override
   void initState(){
     super.initState();
@@ -254,7 +253,7 @@ class _MyAppState extends State <MyApp> {
             SignUp.auth.signOut().then((value) {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => Login()),
+              MaterialPageRoute(builder: (context) => LoginPage()),
               ModalRoute.withName('/'));
           });
           }
