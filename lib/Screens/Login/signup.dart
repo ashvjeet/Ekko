@@ -108,7 +108,7 @@ class _SignUpState extends State<SignUp> with WidgetsBindingObserver {
             };
             final firestore = FirebaseFirestore.instance.collection('listeners').doc(user.uid);
             await firestore.set(data);
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => ListenerApp()));
           }
         });
       } catch (e) {
@@ -282,7 +282,7 @@ class _SignUpState extends State<SignUp> with WidgetsBindingObserver {
                                         };
                                         final firestore = FirebaseFirestore.instance.collection('listeners').doc(userCredential.user!.uid);
                                         firestore.set(data);
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => ListenerApp()));
                                       }
                                     });
                                   }

@@ -25,7 +25,7 @@ class _LoginState extends State<Login> {
             if (user == null) {
               return LoginPage();
             }
-            return MyApp();
+            return ListenerApp();
           } else {
             return Text('Unable to Login');
           }
@@ -173,7 +173,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                   bottom: 30
                                 ),
                                 child: customButton('LOG IN', (){ 
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>MyApp()));}),
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ListenerApp()));}),
                               ),
                               Padding(
                                 padding: EdgeInsets.only(

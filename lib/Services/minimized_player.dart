@@ -1,5 +1,5 @@
 import 'package:ekko/Models/songs.dart';
-import 'package:ekko/Screens/home.dart';
+import 'package:ekko/Screens/listener_home.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:marquee_widget/marquee_widget.dart';

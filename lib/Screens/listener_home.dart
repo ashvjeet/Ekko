@@ -1,20 +1,22 @@
-import 'package:ekko/Screens/Login/signup.dart';
+
 import 'package:ekko/Screens/app.dart';
 import 'package:flutter/material.dart';
 import 'package:ekko/Services/display_carousel.dart';
 import 'package:ekko/Models/songs.dart';
 import 'package:ekko/Services/song_operations.dart';
+import 'package:ekko/Services/artist_operations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ekko/Models/artists.dart';
 
 
-class Home extends StatelessWidget {
+class ListenerHome extends StatelessWidget {
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('listeners');
   final int maxStackSize = 10;
   Function setStateOfPlayer;
   User? user;
-  Home({required this.setStateOfPlayer, required this.user}); //Dart Constructor Shorthand
+  ListenerHome({required this.setStateOfPlayer, required this.user}); //Dart Constructor Shorthand
   
   Widget displayCarousel(){
     return Padding(
@@ -59,6 +61,88 @@ class Home extends StatelessWidget {
       ),
     );
   }
+
+  Widget displayArtistTile(Artist artist){
+    return Padding(
+      padding: EdgeInsets.only(top: 5, left: 5, right: 5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+        Material(
+          color: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            height: 115,
+            width: 115,
+            child: InkWell(
+              onTap: () {},
+              onLongPress: () {},
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 3,
+                      blurRadius: 20,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child:CircleAvatar(
+                foregroundImage: NetworkImage(artist.artistDPURL),
+                backgroundColor: Colors.teal[200],
+                radius: 50,
+              ))),)
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0,5,0,0),
+          child: Container(
+            alignment: Alignment.center,
+            width: 100,
+            child: Text(artist.artistName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),)),
+        ),
+      ],),
+    );
+  }
+
+  Future<Widget> displayArtistList(String Label, String orderByFieldName, bool descendingOrder) async {
+    List<Artist> artistList = await ArtistOperations.getArtists(orderByFieldName, descendingOrder);
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.only(
+            left: 30
+          ),
+          alignment: Alignment.topLeft,
+          child: Text(
+            Label, 
+            style: TextStyle(
+              fontSize: 16, 
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(
+            left: 20, 
+            right: 20
+          ),
+          height: 185, 
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index){
+              return displayArtistTile(artistList[index]);
+            },
+            itemCount: artistList.length,
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  
 
   Widget displaySongTile(Song song) {
     return Padding(
@@ -205,6 +289,24 @@ class Home extends StatelessWidget {
               ),
               FutureBuilder<Widget>(
                 future: displaySongList('Hits','song_plays',false),
+                builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data!;
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(top:185),
+                      child: Center(
+                        child: SpinKitThreeBounce(
+                        color: Colors.teal,
+                        size: 25.0,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              FutureBuilder<Widget>(
+                future: displayArtistList('Top Artists','artist_plays',false),
                 builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
                   if (snapshot.hasData) {
                     return snapshot.data!;

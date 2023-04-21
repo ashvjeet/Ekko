@@ -10,7 +10,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ekko/Screens/Login/signup.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:ekko/Screens/app.dart';
+import 'package:ekko/Screens/artist_app.dart';
 
 
 class ArtistSignUp extends StatefulWidget {
@@ -199,10 +199,12 @@ class _ArtistSignUpState extends State<ArtistSignUp> with WidgetsBindingObserver
               'artist_type':artistTypeController.text,
               'artist_bio':artistBioController.text,
               'artist_country':artistCountry,
+              'artist_plays':0,
+              'artist_likes':0,
             };
             final firestore = FirebaseFirestore.instance.collection('artists').doc(user.uid);
             await firestore.set(data);
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
+            await Navigator.push(context, MaterialPageRoute(builder: (context) => ArtistApp()));
           }
         });
       } catch (e) {

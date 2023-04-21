@@ -3,40 +3,42 @@ import 'package:ekko/Screens/Login/signup.dart';
 import 'package:ekko/Services/pause_play.dart';
 import 'package:ekko/Assets/Themes/style.dart';
 import 'package:ekko/Models/songs.dart';
-import 'package:ekko/Screens/listener_home.dart';
+import 'package:ekko/Screens/artist_home.dart';
 import 'package:ekko/Screens/library.dart';
 import 'package:ekko/Screens/search.dart';
+import 'package:ekko/Screens/upload.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ListenerTab extends StatefulWidget {
-  ListenerTab({required this.playerKey, super.key});
+class ArtistTab extends StatefulWidget {
+  ArtistTab({required this.playerKey, super.key});
   GlobalKey<_MinimizedPlayerState> playerKey;
 
   static int currentTabIndex = 0;
 
   @override
-  State<ListenerTab> createState() => _ListenerTabState();
+  State<ArtistTab> createState() => _ArtistTabState();
 }
 
-class _ListenerTabState extends State<ListenerTab> {
+class _ArtistTabState extends State<ArtistTab> {
   User? user = SignUp.auth.currentUser;
   var navigationTabs = [];
   
   @override
   void initState(){
     super.initState();
-    navigationTabs = [ListenerHome(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
+    navigationTabs = [ArtistHome(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Search(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Library(), 
+    Upload()
     ];
   }
   @override
   Widget build(BuildContext context) {
-    return navigationTabs[ListenerTab.currentTabIndex];
+    return navigationTabs[ArtistTab.currentTabIndex];
   }
 }
 
@@ -177,55 +179,51 @@ class _MinimizedPlayerState extends State<MinimizedPlayer> {
   }
 }
 
-class ListenerBottomNavigationBar extends StatefulWidget {
-  ListenerBottomNavigationBar({required this.navTabKey, super.key});
+class ArtistBottomNavigationBar extends StatefulWidget {
+  ArtistBottomNavigationBar({required this.navTabKey, super.key});
   GlobalKey navTabKey = GlobalKey();
 
   @override
-  State<ListenerBottomNavigationBar> createState() => _ListenerBottomNavigationBarState();
+  State<ArtistBottomNavigationBar> createState() => _ArtistBottomNavigationBarState();
 }
 
-class _ListenerBottomNavigationBarState extends State<ListenerBottomNavigationBar> {
+class _ArtistBottomNavigationBarState extends State<ArtistBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
-    Size deviceSize = MediaQuery.of(context).size;
-    return Container(
-      width: deviceSize.width*0.75,
-      child: BottomNavigationBar(
-        currentIndex: ListenerTab.currentTabIndex,
-        onTap: (currentIndex){
-          ListenerTab.currentTabIndex = currentIndex;
-          widget.navTabKey.currentState?.setState(() {}); 
-          setState(() {});//Re-render on each press
-        },
-        elevation: 0,
-        backgroundColor: Colors.white,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        selectedLabelStyle: null,
-        selectedItemColor: Colors.teal[500],
-        unselectedItemColor: Colors.grey[800],
-        type: BottomNavigationBarType.fixed,
-        items: [
-        BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.house),label: 'HOME',),
-        BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.magnifyingGlass),label: 'SEARCH'),
-        BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.recordVinyl),label: 'LIBRARY'),
-      ]),
-    );
+    return BottomNavigationBar(
+      currentIndex: ArtistTab.currentTabIndex,
+      onTap: (currentIndex){
+        ArtistTab.currentTabIndex = currentIndex;
+        widget.navTabKey.currentState?.setState(() {}); 
+        setState(() {});//Re-render on each press
+      },
+      backgroundColor: Colors.grey[100],
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
+      selectedLabelStyle: null,
+      selectedItemColor: Colors.teal[500],
+      unselectedItemColor: Colors.grey[800],
+      type: BottomNavigationBarType.fixed,
+      items: [
+      BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.house),label: 'HOME',),
+      BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.magnifyingGlass),label: 'SEARCH'),
+      BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.recordVinyl),label: 'LIBRARY'),
+      BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.cloudArrowUp),label: 'UPLOAD')
+    ]);
   }
 }
 
-class ListenerApp extends StatefulWidget {
-  ListenerApp({Key? key}) : super(key:key);
+class ArtistApp extends StatefulWidget {
+  ArtistApp({Key? key}) : super(key:key);
   
   @override
-  State <ListenerApp> createState() => _ListenerAppState();
+  State <ArtistApp> createState() => _ArtistAppState();
 
   
 }
 
-class _ListenerAppState extends State <ListenerApp> {
-  GlobalKey<_ListenerTabState> navTabKey = GlobalKey<_ListenerTabState>();
+class _ArtistAppState extends State <ArtistApp> {
+  GlobalKey<_ArtistTabState> navTabKey = GlobalKey<_ArtistTabState>();
   GlobalKey<_MinimizedPlayerState> playerKey = GlobalKey<_MinimizedPlayerState>();
 
   void _showMenu(BuildContext context) {
@@ -283,7 +281,7 @@ class _ListenerAppState extends State <ListenerApp> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: ListenerTab(key: navTabKey, playerKey: playerKey),
+        body: ArtistTab(key: navTabKey, playerKey: playerKey),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -309,7 +307,7 @@ class _ListenerAppState extends State <ListenerApp> {
               color: Colors.transparent,
               padding: EdgeInsets.only(left: 10, right: 10, top: 10),
               child: MinimizedPlayer(key: playerKey)),
-            ListenerBottomNavigationBar(navTabKey: navTabKey),
+            ArtistBottomNavigationBar(navTabKey: navTabKey),
           ],
         ),
       ),
