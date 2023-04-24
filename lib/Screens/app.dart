@@ -141,7 +141,10 @@ class _MinimizedPlayerState extends State<MinimizedPlayer> {
                         margin: const EdgeInsets.all(8.0),
                         width: 32.0,
                         height: 32.0,
-                        child: const CircularProgressIndicator(),
+                        child: CircularProgressIndicator(
+                          color: Colors.teal.shade400,
+                          strokeWidth: 4,
+                        ),
                       );
                     case ButtonState.paused:
                       return IconButton(
@@ -316,6 +319,5 @@ class _ListenerAppState extends State <ListenerApp> {
     );
   }
 }
-
 
 

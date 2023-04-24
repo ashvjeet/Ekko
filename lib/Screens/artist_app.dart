@@ -12,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArtistTab extends StatefulWidget {
   ArtistTab({required this.playerKey, super.key});
@@ -33,7 +34,7 @@ class _ArtistTabState extends State<ArtistTab> {
     navigationTabs = [ArtistHome(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Search(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Library(), 
-    Upload()
+    Upload(),
     ];
   }
   @override
@@ -225,6 +226,14 @@ class ArtistApp extends StatefulWidget {
 class _ArtistAppState extends State <ArtistApp> {
   GlobalKey<_ArtistTabState> navTabKey = GlobalKey<_ArtistTabState>();
   GlobalKey<_MinimizedPlayerState> playerKey = GlobalKey<_MinimizedPlayerState>();
+  final CollectionReference artistsCollection = FirebaseFirestore.instance.collection('artists');
+  final String uid = SignUp.auth.currentUser!.uid;
+  
+  Future <String?> getArtistDPURL() async {
+    final DocumentSnapshot document = await artistsCollection.doc(uid).get();
+    final String? artistDPUrl = document.get('artist_DP_url');
+    return artistDPUrl;
+  }
 
   void _showMenu(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -293,7 +302,22 @@ class _ArtistAppState extends State <ArtistApp> {
             FloatingActionButton(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              child: FaIcon(FontAwesomeIcons.solidUser, color: Colors.black, size: 22,),
+              child: FutureBuilder<String?>(
+                future: getArtistDPURL(),
+                builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                    return CircleAvatar(
+                      backgroundImage: NetworkImage(snapshot.data!),
+                      radius: 18,
+                    );
+                  } else {
+                    return FaIcon(FontAwesomeIcons.solidUser,
+                    color: Colors.black, 
+                    size: 22
+                    );
+                  }
+                  }
+                ),
               onPressed: () {
                 _showMenu(context);
               },

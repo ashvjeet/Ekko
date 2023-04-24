@@ -129,6 +129,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Uplo
       'song_art_url':imageDownURL,
       'upload_date_time':DateTime.now(),
       'song_plays':0,
+      'song_likes':0,
     };
     newSongDocRef.set(data);
     final String songID = newSongDocRef.id;

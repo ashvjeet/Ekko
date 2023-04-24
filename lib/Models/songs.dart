@@ -6,5 +6,6 @@ class Song{
   String songArtists;
   String audioURL;
   int plays;
-  Song(this.songID, this.songName, this.songArt, this.songArtists, this.audioURL, this.plays);
+  int likes;
+  Song(this.songID, this.songName, this.songArt, this.songArtists, this.audioURL, this.plays, this.likes);
 }

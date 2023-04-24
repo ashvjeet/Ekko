@@ -273,7 +273,7 @@ class _SignUpState extends State<SignUp> with WidgetsBindingObserver {
                                   try{
                                     isSignInMethodEmail = false;
                                     final UserCredential userCredential = await signInWithGoogle();
-                                    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+                                    SignUp.auth.authStateChanges().listen((User? user) {
                                       if(user != null){
                                         var data = {
                                           'listener_id':userCredential.user!.uid,

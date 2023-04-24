@@ -4,8 +4,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ekko/Services/song_operations.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ekko/Screens/app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ekko/Screens/app.dart';
 
 
 class Search extends StatefulWidget {

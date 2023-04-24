@@ -1,4 +1,4 @@
-import 'package:ekko/Screens/app.dart';
+import 'package:ekko/Screens/artist_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:ekko/Services/display_carousel.dart';
 import 'package:ekko/Models/songs.dart';
@@ -8,13 +8,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ekko/Services/artist_operations.dart';
 import 'package:ekko/Models/artists.dart';
+import 'package:ekko/Screens/artist_app.dart';
 
 class ArtistHome extends StatelessWidget {
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('artists');
   final int maxStackSize = 10;
   Function setStateOfPlayer;
   User? user;
-  ArtistHome({required this.setStateOfPlayer, required this.user}); //Dart Constructor Shorthand
+  ArtistHome({required this.setStateOfPlayer, required this.user}); 
   
   Widget displayCarousel(){
     return Padding(
@@ -60,7 +61,7 @@ class ArtistHome extends StatelessWidget {
     );
   }
 
-   Widget displayArtistTile(Artist artist){
+  Widget displayArtistTile(BuildContext context, Artist artist){
     return Padding(
       padding: EdgeInsets.only(top: 5, left: 5, right: 5),
       child: Column(
@@ -73,7 +74,9 @@ class ArtistHome extends StatelessWidget {
             height: 115,
             width: 115,
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushNamed('/artist-profile',arguments: artist);
+              },
               onLongPress: () {},
               child: Container(
                 decoration: BoxDecoration(
@@ -104,6 +107,7 @@ class ArtistHome extends StatelessWidget {
     );
   }
 
+
   Future<Widget> displayArtistList(String Label, String orderByFieldName, bool descendingOrder) async {
     List<Artist> artistList = await ArtistOperations.getArtists(orderByFieldName, descendingOrder);
     return Column(
@@ -130,7 +134,7 @@ class ArtistHome extends StatelessWidget {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index){
-              return displayArtistTile(artistList[index]);
+              return displayArtistTile(context ,artistList[index]);
             },
             itemCount: artistList.length,
           ),
@@ -220,117 +224,135 @@ class ArtistHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: SafeArea(
-        child: Container(
-          child: Column( 
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Container(
-                  alignment: Alignment.topLeft,
-                  padding: EdgeInsets.only(left:15),
-                  child: FutureBuilder(
-                    future: FirebaseFirestore.instance.collection('artists').doc(user!.uid).get(),
-                    builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      }
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
-                        String firstName = data?['artist_name'] ?? '';
+    return Builder(
+      builder: (context)=> Navigator(
+        onGenerateRoute: (settings) {
+          if (settings.name == '/'){
+            return MaterialPageRoute(builder: (context) {
+              return SingleChildScrollView(
+                child: SafeArea(
+                  child: Container(
+                    child: Column( 
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Container(
+                            alignment: Alignment.topLeft,
+                            padding: EdgeInsets.only(left:15),
+                            child: FutureBuilder(
+                              future: FirebaseFirestore.instance.collection('artists').doc(user!.uid).get(),
+                              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                if (snapshot.connectionState == ConnectionState.done) {
+                                  Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
+                                  String firstName = data?['artist_name'] ?? '';
 
-                        return Row(
+                                  return Row(
+                                    children: [
+                                      Text('Hello ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                                      Text('$firstName', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal[600]),),
+                                    ],
+                                  );
+                                }
+                                return Center(
+                                child:  SpinKitThreeBounce(
+                                  color: Colors.teal,
+                                  size: 25.0,
+                                ),
+                                );
+                              }
+                            )
+                          ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Hello ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                            Text('$firstName', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal[600]),),
+                            displayCarousel(),
                           ],
-                        );
-                      }
-                      return Center(
-                      child:  SpinKitThreeBounce(
-                        color: Colors.teal,
-                        size: 25.0,
-                      ),
-                      );
-                    }
+                        ),
+                        FutureBuilder<Widget>(
+                          future: displaySongList('New Releases','upload_date_time',false),
+                          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data!;
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.only(top:80),
+                                child: Center(
+                                  child:SpinKitThreeBounce(
+                                  color: Colors.teal,
+                                  size: 25.0,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        FutureBuilder<Widget>(
+                          future: displaySongList('Hits','song_plays',false),
+                          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data!;
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.only(top:185),
+                                child: Center(
+                                  child: SpinKitThreeBounce(
+                                  color: Colors.teal,
+                                  size: 25.0,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        FutureBuilder<Widget>(
+                          future: displayArtistList('Top Artists','artist_plays',false),
+                          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data!;
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.only(top:185),
+                                child: Center(
+                                  child: SpinKitThreeBounce(
+                                  color: Colors.teal,
+                                  size: 25.0,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ]
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                        Colors.white60,
+                        Colors.teal.shade100,], 
+                        begin:  Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    ),
                   )
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  displayCarousel(),
-                ],
-              ),
-              FutureBuilder<Widget>(
-                future: displaySongList('New Releases','upload_date_time',false),
-                builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                  if (snapshot.hasData) {
-                    return snapshot.data!;
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.only(top:80),
-                      child: Center(
-                        child:SpinKitThreeBounce(
-                        color: Colors.teal,
-                        size: 25.0,
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-              FutureBuilder<Widget>(
-                future: displaySongList('Hits','song_plays',false),
-                builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                  if (snapshot.hasData) {
-                    return snapshot.data!;
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.only(top:185),
-                      child: Center(
-                        child: SpinKitThreeBounce(
-                        color: Colors.teal,
-                        size: 25.0,
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-              FutureBuilder<Widget>(
-                future: displayArtistList('Top Artists','artist_plays',false),
-                builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
-                  if (snapshot.hasData) {
-                    return snapshot.data!;
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.only(top:185),
-                      child: Center(
-                        child: SpinKitThreeBounce(
-                        color: Colors.teal,
-                        size: 25.0,
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-            ]
-          ),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-              Colors.white60,
-              Colors.teal.shade100,], 
-              begin:  Alignment.topLeft,
-              end: Alignment.bottomRight,
-            )
-          ),
-        )
+              );
+
+            });
+          }
+          else if (settings.name == '/artist-profile') {
+            final args = settings.arguments;
+            return MaterialPageRoute(
+              builder: (context) => ArtistProfile(artist: args as Artist, setStateOfPlayer: setStateOfPlayer)
+            );
+          }
+          return null;
+        },
       ),
     );
   }
-}  
+}

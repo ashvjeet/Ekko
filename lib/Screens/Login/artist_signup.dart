@@ -201,6 +201,8 @@ class _ArtistSignUpState extends State<ArtistSignUp> with WidgetsBindingObserver
               'artist_country':artistCountry,
               'artist_plays':0,
               'artist_likes':0,
+              'single_uploads':[],
+              'album_uploads':[],
             };
             final firestore = FirebaseFirestore.instance.collection('artists').doc(user.uid);
             await firestore.set(data);

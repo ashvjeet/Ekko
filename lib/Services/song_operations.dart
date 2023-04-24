@@ -17,7 +17,9 @@ class SongOperations {
                                document.get('song_art_url'),
                                document.get('contributing_artist_name'),
                                document.get('song_url'),
-                               document.get('song_plays')));
+                               document.get('song_plays'),
+                               document.get('song_likes'),
+                               ));
        });
     });
     return songlist;
@@ -34,7 +36,9 @@ class SongOperations {
                                document.get('song_art_url'),
                                document.get('contributing_artist_name'),
                                document.get('song_url'),
-                               document.get('song_plays')));
+                               document.get('song_plays'),
+                               document.get('song_likes'),
+                               ));
        });
     });
     return songlist;
@@ -57,7 +61,9 @@ class SongOperations {
                                document.get('song_art_url'),
                                document.get('contributing_artist_name'),
                                document.get('song_url'),
-                               document.get('song_plays')));
+                               document.get('song_plays'),
+                               document.get('song_likes'),
+                               ));
       });
     }); 
     }
