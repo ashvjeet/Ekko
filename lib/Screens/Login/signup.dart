@@ -105,6 +105,7 @@ class _SignUpState extends State<SignUp> with WidgetsBindingObserver {
               'listener_id':user.uid,
               'first_name':nameController.text,
               'listener_email':emailController.text,
+              'listener_likes':[]
             };
             final firestore = FirebaseFirestore.instance.collection('listeners').doc(user.uid);
             await firestore.set(data);

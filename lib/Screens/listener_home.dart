@@ -366,8 +366,8 @@ class _ListenerHomeState extends State<ListenerHome> {
           else if (settings.name == '/song-info') {
             final args = settings.arguments;
             return MaterialPageRoute(
-              builder: (context) => SongInfoPage(song: args as Song)
-              );
+              builder: (context) => SongInfoPage(setStateOfPlayer: widget.setStateOfPlayer, song: args as Song)
+            );
           }
           return null;
         },

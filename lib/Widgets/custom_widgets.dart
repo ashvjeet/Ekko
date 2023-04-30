@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 TextFormField customTextField(String text, IconData icon, bool isNameType, TextEditingController controller,){
   return TextFormField(
     onTap: ()=>{},
@@ -46,6 +44,7 @@ ElevatedButton customButton(String text, Function onTap){
       elevation: 10,
       backgroundColor: Colors.teal[300],
       minimumSize: Size(260, 50),
+      maximumSize: Size(260, 50),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30)
       )
@@ -60,3 +59,32 @@ ElevatedButton customButton(String text, Function onTap){
     )
   );
 }
+
+SnackBar showCustomSnackBar(String text, int duration){
+  return SnackBar(
+    elevation: 10,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+    clipBehavior: Clip.antiAlias,
+    backgroundColor: Colors.teal[200],
+    duration: Duration(seconds: duration),
+    content: Text(text, 
+    style: TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+      fontFamily: 'Kanit',
+      ),
+    ),
+  );
+}
+
+//import 'package:fluttertoast/fluttertoast.dart';
+  
+   /*Fluttertoast.showToast(
+      msg: "Upload Successful",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 2,
+      backgroundColor: Colors.grey[600],
+      textColor: Colors.white,
+      fontSize: 14.0
+    );*/

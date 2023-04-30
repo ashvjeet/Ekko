@@ -31,7 +31,7 @@ class _ListenerTabState extends State<ListenerTab> {
     super.initState();
     navigationTabs = [ListenerHome(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Search(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
-    Library(), 
+    Library(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     ];
   }
   @override

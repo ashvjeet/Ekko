@@ -33,7 +33,7 @@ class _ArtistTabState extends State<ArtistTab> {
     super.initState();
     navigationTabs = [ArtistHome(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Search(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
-    Library(), 
+    Library(setStateOfPlayer:()=>widget.playerKey.currentState?.setState(() {}), user: user), 
     Upload(),
     ];
   }

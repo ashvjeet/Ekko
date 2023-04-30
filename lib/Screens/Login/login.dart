@@ -348,7 +348,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget> [
-                             
                               Padding(
                                 padding: EdgeInsets.only(
                                   top: 20, 
@@ -458,29 +457,33 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                     catch(e){
                                       Text('Google Sign in failed: $e');
                                     }
-                                  },
+                                  }, 
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red[800],
                                     minimumSize: Size(260, 50),
+                                    maximumSize: Size(260, 50),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30)
                                     ),
                                     elevation: 10
                                   ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                    Container(
-                                      height: 30,
-                                      width: 30,
-                                      child: Image.asset('lib/Assets/Logos/google_sign_in.png', fit: BoxFit.cover,)),
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 10),
-                                        child: Text('LOG IN WITH GOOGLE', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                      )
-                                                          
-                                  ],)),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                      Container(
+                                        height: 30,
+                                        width: 30,
+                                        child: Image.asset('lib/Assets/Logos/google_sign_in.png', fit: BoxFit.cover,)),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 10),
+                                          child: Text('LOG IN WITH GOOGLE', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                        )
+                                                            
+                                    ],),
+                                  )),
                               ),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(50,5,40,30),

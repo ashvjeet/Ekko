@@ -1,3 +1,4 @@
+import 'package:ekko/Services/artist_operations.dart';
 import 'package:flutter/material.dart';
 import 'package:ekko/Models/songs.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,10 +7,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ekko/Screens/app.dart';
-
+import 'package:ekko/Models/artists.dart';
 
 class Search extends StatefulWidget {
-  
+
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('listeners');
   final int maxStackSize = 10;
   User? user = FirebaseAuth.instance.currentUser;
@@ -47,44 +48,36 @@ class Search extends StatefulWidget {
           setStateOfPlayer();
 
         },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Row(
-              children: [
-              Material(
-                color: Colors.teal[100],
-                elevation: 8,
-                child: Container(
-                  height: 60,
-                  width: 60,
-                  child: ClipRRect(
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(song.songArt, fit: BoxFit.cover,))),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            children: [
+            Container(
+              height: 60,
+              width: 60,
+              child: ClipRRect(
+                clipBehavior: Clip.antiAlias,
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(song.songArt, fit: BoxFit.cover,))),
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Column(
+                children: [
+                  Container(
+                    width: 100,
+                    child: Text(song.songName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),)),
+                  Container(
+                    width: 100,
+                    child: Text(song.songArtists, style: TextStyle(fontSize: 10),))
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 100,
-                      child: Text(song.songName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),)),
-                    Container(
-                      width: 100,
-                      child: Text(song.songArtists, style: TextStyle(fontSize: 10),))
-                  ],
-                ),
-              ),
-              
-            ],),
-          ),
+            ),
+            
+          ],),
         ),
       ),
     );
   }
-
 
   Future<Widget> displaySongSearchList(String value) async {
     List<Song> songList = await SongOperations.getSongSearch(value);
@@ -105,29 +98,116 @@ class Search extends StatefulWidget {
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(
-              left: 0, 
-              right: 20
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 240,
+              maxWidth: 300,
             ),
-            height: 240, 
-            width: 300,
-            child: Scrollbar(
-              interactive: true,
-              thickness: 5,
-              radius: Radius.circular(5),
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemBuilder: (context, index){
-                  return displaySongTileSearch(songList[index]);
-                },
-                itemCount: songList.length,
+            child: Container(
+              padding: EdgeInsets.only(
+                left: 0, 
+                right: 20
+              ),
+              child: Scrollbar(
+                interactive: true,
+                thickness: 5,
+                radius: Radius.circular(5),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index){
+                    return displaySongTileSearch(songList[index]);
+                  },
+                  itemCount: songList.length,
+                ),
               ),
             ),
           ),
         ],
       );
     }
+
+  Widget displayArtistTileSearch(Artist artist) {
+    return Padding(
+      padding: EdgeInsets.only(top: 5, left: 5,right: 0, bottom: 5),
+      child: InkWell(
+        onTap: () async{
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Row(
+            children: [
+            CircleAvatar(
+              maxRadius: 30,
+              minRadius: 30,
+              foregroundImage: NetworkImage(artist.artistDPURL)),
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Column(
+                children: [
+                  Container(
+                    width: 100,
+                    child: Text(artist.artistName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),)),
+                ],
+              ),
+            ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<Widget> displayArtistSearchList(String value) async {
+    List<Artist> artistList = await ArtistOperations.getArtistSearch(value);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.only(
+              left: 10,
+              top: 20,
+              bottom: 5,
+            ),
+            alignment: Alignment.topLeft,
+            child: Text(
+              'Results in Artists', 
+              style: TextStyle(
+                fontSize: 16, 
+                fontWeight: FontWeight.bold
+              ),
+            ),
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 210,
+              maxWidth: 300,
+            ),
+            child: Container(
+              padding: EdgeInsets.only(
+                left: 8, 
+                right: 20
+              ),
+              child: Scrollbar(
+                interactive: true,
+                thickness: 5,
+                radius: Radius.circular(5),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index){
+                    return displayArtistTileSearch(artistList[index]);
+                  },
+                  itemCount: artistList.length,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+
 
   Widget displaySongTileSearchHistory(Song song) {
     return Padding(
@@ -138,39 +218,32 @@ class Search extends StatefulWidget {
           MinimizedPlayer.song = song;
           setStateOfPlayer();
         },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Row(
-              children: [
-              Material(
-                color: Colors.teal[100],
-                elevation: 8,
-                child: Container(
-                  height: 60,
-                  width: 60,
-                  child: ClipRRect(
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(song.songArt, fit: BoxFit.cover,))),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            children: [
+            Container(
+              height: 60,
+              width: 60,
+              child: ClipRRect(
+                clipBehavior: Clip.antiAlias,
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(song.songArt, fit: BoxFit.cover,))),
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Column(
+                children: [
+                  Container(
+                    width: 100,
+                    child: Text(song.songName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),)),
+                  Container(
+                    width: 100,
+                    child: Text(song.songArtists, style: TextStyle(fontSize: 10),))
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 100,
-                      child: Text(song.songName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),)),
-                    Container(
-                      width: 100,
-                      child: Text(song.songArtists, style: TextStyle(fontSize: 10),))
-                  ],
-                ),
-              ),
-              
-            ],),
-          ),
+            ),
+            
+          ],),
         ),
       ),
     );
@@ -240,11 +313,12 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin<Sear
     super.build(context);
     Size deviceSize = MediaQuery.of(context).size;
     return SafeArea(
-      child: PageView(
-        children:[SingleChildScrollView(
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: deviceSize.height,
+          ),
           child: Container(
-            width: deviceSize.width,
-            height: deviceSize.height,
             child: Padding(
               padding: const EdgeInsets.all(25.0),
               child: Column(
@@ -323,6 +397,24 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin<Sear
                 },
               ),
               FutureBuilder<Widget>(
+                future: widget.displayArtistSearchList(value),
+                builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data!;
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.only(top:185),
+                      child: Center(
+                        child: SpinKitThreeBounce(
+                        color: Colors.teal,
+                        size: 25.0,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              FutureBuilder<Widget>(
                 future: widget.displaySongSearchHistoryList(),
                 builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
                   if (snapshot.hasData) {
@@ -349,8 +441,8 @@ class _SearchState extends State<Search> with AutomaticKeepAliveClientMixin<Sear
                 end: Alignment.bottomRight,
               )
             )
-          ) 
-        ),]
+          ),
+        ) 
       ),
     );
   }

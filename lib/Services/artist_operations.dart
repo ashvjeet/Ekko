@@ -54,4 +54,78 @@ class ArtistOperations {
     }
     return artistSingles;
   }
+
+  static Future<int> calculateArtistPlays(String artistID) async {
+    CollectionReference artists = FirebaseFirestore.instance.collection('artists');
+    int artistPlays = 0;
+    List<String> artistSinglesList = [];
+    DocumentSnapshot documentSnapshot = await artists.doc(artistID).get();
+    if (documentSnapshot.exists) {
+      Map<dynamic, dynamic> userData = (documentSnapshot.data() ?? {}) as Map<dynamic, dynamic>;
+      artistSinglesList = List<String>.from(userData['single_uploads'] ?? []);
+    }
+    if(artistSinglesList.length != 0){
+       await FirebaseFirestore.instance.collection('songs').where('song_id', whereIn: artistSinglesList).get().then((QuerySnapshot querySnapshot){
+      querySnapshot.docs.forEach((QueryDocumentSnapshot document) {
+        artistPlays = artistPlays + document.get('song_plays') as int;
+      });
+    }); 
+    }
+    return artistPlays;
+  }
+
+  static Future<int> calculateArtistLikes(String artistID) async {
+    CollectionReference artists = FirebaseFirestore.instance.collection('artists');
+    int artistLikes = 0;
+    List<String> artistSinglesList = [];
+    DocumentSnapshot documentSnapshot = await artists.doc(artistID).get();
+    if (documentSnapshot.exists) {
+      Map<dynamic, dynamic> userData = (documentSnapshot.data() ?? {}) as Map<dynamic, dynamic>;
+      artistSinglesList = List<String>.from(userData['single_uploads'] ?? []);
+    }
+    if(artistSinglesList.length != 0){
+       await FirebaseFirestore.instance.collection('songs').where('song_id', whereIn: artistSinglesList).get().then((QuerySnapshot querySnapshot){
+      querySnapshot.docs.forEach((QueryDocumentSnapshot document) {
+        artistLikes = artistLikes + document.get('song_likes') as int;
+      });
+    }); 
+    }
+    return artistLikes;
+  }
+
+  static Future<int> calculateArtistUploads(String artistID) async {
+    CollectionReference artists = FirebaseFirestore.instance.collection('artists');
+    int artistUploads = 0;
+    List<String> artistSinglesList = [];
+    DocumentSnapshot documentSnapshot = await artists.doc(artistID).get();
+    if (documentSnapshot.exists) {
+      Map<dynamic, dynamic> userData = (documentSnapshot.data() ?? {}) as Map<dynamic, dynamic>;
+      artistSinglesList = List<String>.from(userData['single_uploads'] ?? []);
+    }
+    artistUploads = artistSinglesList.length;
+    return artistUploads;
+  }
+
+  static Future<List<Artist>> getArtistSearch(String searchParameter) async{
+    List<Artist> artistlist = [];
+    await firestore.collection('artists').where('artist_name',
+     isGreaterThanOrEqualTo: searchParameter).where('artist_name', 
+     isLessThan: searchParameter+'z').get().then((QuerySnapshot snapshot){
+      snapshot.docs.forEach((DocumentSnapshot document) {
+        artistlist.insert(0,Artist(document.get('artist_id'),
+                               document.get('artist_name'),
+                               document.get('artist_email'),
+                               document.get('artist_DP_url'),
+                               document.get('artist_type'),
+                               document.get('artist_bio'),
+                               document.get('artist_country'),
+                               document.get('artist_plays'),
+                               document.get('artist_likes'),
+                               document.get('single_uploads'),
+                               document.get('album_uploads'),
+                               ));
+       });
+    });
+    return artistlist;
+  }
 }

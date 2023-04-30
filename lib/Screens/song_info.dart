@@ -1,16 +1,48 @@
 import 'package:ekko/Models/songs.dart';
+import 'package:ekko/Screens/Login/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ekko/Services/song_operations.dart';
+import 'package:ekko/Screens/app.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ekko/Widgets/custom_widgets.dart';
 
 class SongInfoPage extends StatefulWidget {
   Song song;
-  SongInfoPage({required this.song, super.key});
+  Function setStateOfPlayer;
+  User? user = SignUp.auth.currentUser;
+  SongInfoPage({required this.setStateOfPlayer,required this.song, super.key});
+  final CollectionReference usersRef = FirebaseFirestore.instance.collection('listeners');
+  final int maxStackSize = 10;
 
   @override
   State<SongInfoPage> createState() => _SongInfoPageState();
+
+  Future<Widget> getLikedStatus() async {
+    if(await SongOperations.IfSongInUserLikes(user!, song)) {
+      return FaIcon(FontAwesomeIcons.solidHeart, color: Colors.teal[600],);
+    } 
+    else {
+      return FaIcon(FontAwesomeIcons.heart, color: Colors.grey[800]);
+    }
+  }
 }
 
 class _SongInfoPageState extends State<SongInfoPage> {
+  bool liked = false;
+
+  @override
+  void initState(){
+    super.initState();
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    liked = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
@@ -34,6 +66,7 @@ class _SongInfoPageState extends State<SongInfoPage> {
                 padding: const EdgeInsets.only(left: 20, top: 20),
                 child: GestureDetector(
                   onTap: () {
+                    liked = false;
                     Navigator.pop(context);
                   },
                   child: FaIcon(
@@ -72,12 +105,56 @@ class _SongInfoPageState extends State<SongInfoPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          FaIcon(FontAwesomeIcons.play,
-                          color: Colors.grey[800],
+                          GestureDetector(
+                            onTap: () async {
+                                DocumentSnapshot userSnapshot = await widget.usersRef.doc(widget.user!.uid).get();
+                                Map<dynamic, dynamic> userData = (userSnapshot.data() ?? {}) as Map<dynamic, dynamic>;
+                                List<String> playHistory = List<String>.from(userData['song_history'] ?? []);
+                                if (playHistory.length >= widget.maxStackSize) {
+                                  await widget.usersRef.doc(widget.user!.uid).update({
+                                    'song_history': FieldValue.arrayRemove([playHistory.last])
+                                  });
+                                }
+                                await widget.usersRef.doc(widget.user!.uid).update({
+                                  'song_history': FieldValue.arrayUnion([widget.song.songID])
+                                });
+                                SongOperations.incrementSongPlays(widget.song.songID);
+                                MinimizedPlayer.song = widget.song;
+                                widget.setStateOfPlayer();
+                            },
+                            child: FaIcon(FontAwesomeIcons.play,
+                            color: Colors.grey[800],
+                            ),
                           ),
                           SizedBox(width: 30,),
-                          FaIcon(FontAwesomeIcons.heart,
-                          color: Colors.grey[800],
+                          GestureDetector(
+                            onTap: () async {
+                              if(await SongOperations.IfSongInUserLikes(widget.user!, widget.song)){
+                                await widget.usersRef.doc(widget.user!.uid).update({
+                                    'liked_songs': FieldValue.arrayRemove([widget.song.songID])});
+                                    SongOperations.decrementSongLikes(widget.song.songID);
+                                    ScaffoldMessenger.of(context).showSnackBar(showCustomSnackBar('Removed from Liked Songs',1));
+                              }
+                              else{
+                                widget.usersRef.doc(widget.user!.uid).update({
+                                  'liked_songs': FieldValue.arrayUnion([widget.song.songID])});
+                                  SongOperations.incrementSongLikes(widget.song.songID);
+                                  ScaffoldMessenger.of(context).showSnackBar(showCustomSnackBar('Added to Liked Songs',1));
+                              }
+                              setState(() {});
+                            },
+                            child: FutureBuilder<Widget>(
+                              future: widget.getLikedStatus(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return snapshot.data!;
+                                } else {
+                                  return CircularProgressIndicator(
+                                    color: Colors.teal[400],
+                                  );
+                                } 
+                              },
+                            ) 
                           ),
                           SizedBox(width: 30,),
                           FaIcon(FontAwesomeIcons.shareNodes,

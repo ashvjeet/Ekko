@@ -29,9 +29,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:host="https://ekko.page.link"
-                    android:pathPrefix="/getstarted"
+                    android:host="ekko.page.link"
                     android:scheme="https"/>
+                <data
+                    android:host="ekko.page.link"
+                    android:scheme="http"/>
             </intent-filter>
         </activity>
         <activity

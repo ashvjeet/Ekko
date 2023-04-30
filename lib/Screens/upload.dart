@@ -1,20 +1,19 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ekko/Services/song_operations.dart';
+import 'package:ekko/Widgets/custom_widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
-//import 'package:fluttertoast/fluttertoast.dart';
-
 
 class Upload extends StatefulWidget {
   @override
   _UploadState createState() => _UploadState();
 }
 
-class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Upload>{
+class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Upload> {
   TextEditingController songName = TextEditingController();
   TextEditingController contributingArtistName = TextEditingController();
 
@@ -233,24 +232,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Uplo
                       {
                         uploadErrorMessage = '';
                         finalUpload();
-                        /*Fluttertoast.showToast(
-                          msg: "Upload Successful",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 2,
-                          backgroundColor: Colors.grey[600],
-                          textColor: Colors.white,
-                          fontSize: 14.0
-                        );*/
-                        const snackdemo = SnackBar(
-                          content: Text('Upload Successful'),
-                          backgroundColor: Colors.green,
-                          elevation: 20,
-                          behavior: SnackBarBehavior.floating,
-                          margin: EdgeInsets.all(5),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackdemo);
-      
+                        ScaffoldMessenger.of(context).showSnackBar(showCustomSnackBar('Upload Successful', 3));
                         songName.clear();
                         contributingArtistName.clear();
                         audioFileName = '';
@@ -262,8 +244,7 @@ class _UploadState extends State<Upload> with AutomaticKeepAliveClientMixin<Uplo
                       else 
                       {
                         uploadErrorMessage = 'Song name, Audio File and Song Art are compulsory';
-                        setState(() {});
-                        
+                        setState(() {}); 
                       } 
                     },
                     child: Row(

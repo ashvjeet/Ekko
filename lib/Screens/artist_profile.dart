@@ -21,8 +21,7 @@ class ArtistProfile extends StatefulWidget {
 
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('listeners');
   final int maxStackSize = 10;
-  User? user = SignUp.auth.currentUser;
-
+  final User? user = SignUp.auth.currentUser;
 
   Widget displaySongTileArtistProfile(Song song) {
     return Padding(
@@ -44,7 +43,6 @@ class ArtistProfile extends StatefulWidget {
           SongOperations.incrementSongPlays(song.songID);
           MinimizedPlayer.song = song;
           setStateOfPlayer();
-
         },
         child: Padding(
           padding: const EdgeInsets.only(top: 5),
@@ -82,36 +80,72 @@ class ArtistProfile extends StatefulWidget {
 
   Future<Widget> displaySongListArtistProfile(String artistID) async {
     List<Song> songList = await ArtistOperations.getSinglesOfArtist(artistID);
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              child: Scrollbar(
-                interactive: true,
-                thickness: 5,
-                radius: Radius.circular(5),
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index){
-                    if(songList.length != 0)
-                    {
-                      return displaySongTileArtistProfile(songList[index]);
-                    } else {
-                      return Center(
-                        child: Text('No songs uploaded yet')
-                      );
-                    } 
-                  },
-                  itemCount: songList.length,
-                ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: Scrollbar(
+              interactive: true,
+              thickness: 5,
+              radius: Radius.circular(5),
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index){
+                  if(songList.length != 0)
+                  {
+                    return displaySongTileArtistProfile(songList[index]);
+                  } else {
+                    return Center(
+                      child: Text('No songs uploaded yet')
+                    );
+                  } 
+                },
+                itemCount: songList.length,
               ),
             ),
           ),
-        ],
-      );
-    }
+        ),
+      ],
+    );
+  }
+
+  Future<Widget> getArtistPlays(String artistID) async {
+    int total_plays = await ArtistOperations.calculateArtistPlays(artistID);
+    return Text(
+      total_plays.toString(), 
+      style: TextStyle(
+        color: Colors.grey[800],
+        fontSize: 16,
+        fontWeight: FontWeight.bold
+      )
+    );
+  }
+
+  Future<Widget> getArtistLikes(String artistID) async {
+    int total_likes = await ArtistOperations.calculateArtistLikes(artistID);
+    return Text(
+      total_likes.toString(), 
+      style: TextStyle(
+        color: Colors.grey[800],
+        fontSize: 16,
+        fontWeight: FontWeight.bold
+      )
+    );
+  }
+
+  Future<Widget> getArtistUploads(String artistID) async {
+    int total_uploads = await ArtistOperations.calculateArtistUploads(artistID);
+    return Text(
+      total_uploads.toString(), 
+      style: TextStyle(
+        color: Colors.grey[800],
+        fontSize: 16,
+        fontWeight: FontWeight.bold
+      )
+    );
+  }
 }
 
 class _ArtistProfileState extends State<ArtistProfile> with SingleTickerProviderStateMixin {
@@ -131,8 +165,6 @@ class _ArtistProfileState extends State<ArtistProfile> with SingleTickerProvider
   }
   @override
   Widget build(BuildContext context) {
-    String plays = widget.artist.artistPlays.toString();
-    String likes = widget.artist.artistLikes.toString();
     Size deviceSize = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
@@ -179,7 +211,6 @@ class _ArtistProfileState extends State<ArtistProfile> with SingleTickerProvider
                       foregroundImage: NetworkImage(widget.artist.artistDPURL),
                       radius: 60,
                     ),
-      
                   ),
                   SizedBox(width: 30),
                   Column(
@@ -193,12 +224,18 @@ class _ArtistProfileState extends State<ArtistProfile> with SingleTickerProvider
                       SizedBox(height: 10),
                       Container(
                         width: 60,
-                        child: Text(plays,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold
-                          )
+                        child: FutureBuilder<Widget>(
+                          future: widget.getArtistPlays(widget.artist.artistID),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data!;
+                            } else {
+                              return SpinKitThreeBounce(
+                              color: Colors.teal,
+                              size: 7.0,
+                              );
+                            } 
+                          },
                         ),
                       ),
                       Container(
@@ -225,12 +262,18 @@ class _ArtistProfileState extends State<ArtistProfile> with SingleTickerProvider
                       SizedBox(height: 10),
                       Container(
                         width: 60,
-                        child: Text(likes,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold
-                          )
+                        child: FutureBuilder<Widget>(
+                          future: widget.getArtistLikes(widget.artist.artistID),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data!;
+                            } else {
+                              return SpinKitThreeBounce(
+                              color: Colors.teal,
+                              size: 7.0,
+                              );
+                            } 
+                          },
                         ),
                       ),
                       Container(
@@ -257,12 +300,18 @@ class _ArtistProfileState extends State<ArtistProfile> with SingleTickerProvider
                       SizedBox(height: 10),
                       Container(
                         width: 60,
-                        child: Text('10',
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold
-                          )
+                        child: FutureBuilder<Widget>(
+                          future: widget.getArtistUploads(widget.artist.artistID),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data!;
+                            } else {
+                              return SpinKitThreeBounce(
+                              color: Colors.teal,
+                              size: 7.0,
+                              );
+                            } 
+                          },
                         ),
                       ),
                       Container(
