@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ekko/Models/category.dart';
-import 'package:ekko/Services/category_operations.dart';
 import 'package:ekko/Screens/liked_songs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,76 +10,11 @@ class Library extends StatefulWidget {
   Function setStateOfPlayer;
   Library({required this.setStateOfPlayer, required this.user ,super.key});
 
-
   @override
   State<Library> createState() => _LibraryState();
 }
 
 class _LibraryState extends State <Library> {
-
-  Widget displayCategory(BuildContext context, Category category) {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pushNamed(category.categoryPath);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: Offset(0, 3),
-            ),
-          ],
-          gradient: LinearGradient(
-            colors:[
-              Colors.grey.shade200,
-              Colors.teal.shade100],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              stops: [0.3,0.9]
-          ), 
-              borderRadius: BorderRadius.circular(8)
-        ),
-        alignment: Alignment.centerLeft,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-            padding: EdgeInsets.fromLTRB(25,10,0,10),
-            child: Icon(category.icon, size: 28, color: Colors.teal[400],),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(category.name, style: TextStyle(color: Colors.grey[700], fontSize: 15, fontWeight: FontWeight.bold),),
-            ),
-          ],
-        )
-      ),
-    );
-  }
-
-  List<Widget> displayListOfCategories(BuildContext context){
-    List<Category> categoryList = CategoryOperations.getCategories();
-    List<Widget> categories = categoryList.map((Category category)=>displayCategory(context, category)).toList();  
-    return categories;
-  }
-
-  Widget displayGrid(BuildContext context){
-    return Container(
-      height: 300, 
-      child: GridView.count(
-        padding: EdgeInsets.all(10),
-        childAspectRatio: 5/2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        children: displayListOfCategories(context),
-        crossAxisCount: 2,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

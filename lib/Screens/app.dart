@@ -63,7 +63,7 @@ class _MinimizedPlayerState extends State<MinimizedPlayer> {
     super.dispose();
   }
 
-  Widget minimizedPlayer(Song? song) {
+  Widget minimizedPlayer(Song? song, {List<Song>? playlist}) {
     if(MinimizedPlayer.setState == true){
       setState(() {});
     }

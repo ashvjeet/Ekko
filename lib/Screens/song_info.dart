@@ -7,12 +7,15 @@ import 'package:ekko/Screens/app.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ekko/Widgets/custom_widgets.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 class SongInfoPage extends StatefulWidget {
+
   Song song;
   Function setStateOfPlayer;
   User? user = SignUp.auth.currentUser;
-  SongInfoPage({required this.setStateOfPlayer,required this.song, super.key});
+  SongInfoPage({required this.setStateOfPlayer, required this.song, super.key});
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('listeners');
   final int maxStackSize = 10;
 
@@ -30,17 +33,45 @@ class SongInfoPage extends StatefulWidget {
 }
 
 class _SongInfoPageState extends State<SongInfoPage> {
-  bool liked = false;
+ 
+  String? linkMessage;
+
+  Future<void> shareLink() async {
+    if (linkMessage != null) {
+      await Share.share(linkMessage!);
+    }
+  }
+
+  Future<void> createDynamicLink(String songID) async {
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      uriPrefix: 'https://ekko.page.link/',
+      link: Uri.parse('https://ekko.page.link/song-info/${songID}'),
+      androidParameters: AndroidParameters(
+        packageName: 'com.example.ekko', 
+        minimumVersion: 1, 
+      ),
+      socialMetaTagParameters: SocialMetaTagParameters(
+        title: 'Ekko',
+        description: 'Check out this cool song on Ekko',
+      ),
+    );
+
+    final Uri dynamicUrl = await FirebaseDynamicLinks.instance.buildLink(parameters);
+    setState(() {
+      linkMessage = dynamicUrl.toString();
+    });
+  }
+
 
   @override
   void initState(){
     super.initState();
+    createDynamicLink(widget.song.songID);
   }
 
   @override
   void dispose(){
     super.dispose();
-    liked = false;
   }
 
   @override
@@ -66,7 +97,6 @@ class _SongInfoPageState extends State<SongInfoPage> {
                 padding: const EdgeInsets.only(left: 20, top: 20),
                 child: GestureDetector(
                   onTap: () {
-                    liked = false;
                     Navigator.pop(context);
                   },
                   child: FaIcon(
@@ -157,8 +187,13 @@ class _SongInfoPageState extends State<SongInfoPage> {
                             ) 
                           ),
                           SizedBox(width: 30,),
-                          FaIcon(FontAwesomeIcons.shareNodes,
-                          color: Colors.grey[800],
+                          GestureDetector(
+                            onTap: () async {
+                              shareLink();
+                            },
+                            child: FaIcon(FontAwesomeIcons.shareNodes,
+                            color: Colors.grey[800],
+                            ),
                           ),
                         ],  
                       ),

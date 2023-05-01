@@ -19,8 +19,6 @@ class ArtistOperations {
                                document.get('artist_type'),
                                document.get('artist_bio'),
                                document.get('artist_country'),
-                               document.get('artist_plays'),
-                               document.get('artist_likes'),
                                document.get('single_uploads'),
                                document.get('album_uploads')
                                ));
@@ -68,10 +66,16 @@ class ArtistOperations {
        await FirebaseFirestore.instance.collection('songs').where('song_id', whereIn: artistSinglesList).get().then((QuerySnapshot querySnapshot){
       querySnapshot.docs.forEach((QueryDocumentSnapshot document) {
         artistPlays = artistPlays + document.get('song_plays') as int;
+        artists.doc(artistID).update({'artist_plays': artistPlays});
       });
     }); 
     }
     return artistPlays;
+  }
+
+  static void decrementSongLikes(String songID) {
+    DocumentReference SongDocRef = songsCollection.doc(songID);
+    SongDocRef.update({'song_likes':FieldValue.increment(-1)});
   }
 
   static Future<int> calculateArtistLikes(String artistID) async {
@@ -87,6 +91,7 @@ class ArtistOperations {
        await FirebaseFirestore.instance.collection('songs').where('song_id', whereIn: artistSinglesList).get().then((QuerySnapshot querySnapshot){
       querySnapshot.docs.forEach((QueryDocumentSnapshot document) {
         artistLikes = artistLikes + document.get('song_likes') as int;
+        artists.doc(artistID).update({'artist_likes': artistLikes});
       });
     }); 
     }
@@ -119,8 +124,6 @@ class ArtistOperations {
                                document.get('artist_type'),
                                document.get('artist_bio'),
                                document.get('artist_country'),
-                               document.get('artist_plays'),
-                               document.get('artist_likes'),
                                document.get('single_uploads'),
                                document.get('album_uploads'),
                                ));

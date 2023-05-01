@@ -58,6 +58,8 @@ dependencies:
   google_sign_in: ^6.0.2
   firebase_dynamic_links: ^5.1.0
   country_picker: ^2.0.20
+  share_plus: ^4.5.3
+  uri: ^1.0.0
 
 dev_dependencies:
   flutter_test:

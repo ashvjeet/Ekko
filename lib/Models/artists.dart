@@ -6,9 +6,7 @@ class Artist{
   String artistType;
   String artistBio;
   String artistCountry;
-  int artistPlays;
-  int artistLikes;
   List<dynamic> singleUploads;
   List<dynamic> albumUploads;
-  Artist(this.artistID, this.artistName, this.artistEmail, this.artistDPURL, this.artistType, this.artistBio, this.artistCountry, this.artistPlays, this.artistLikes, this.singleUploads, this.albumUploads);
+  Artist(this.artistID, this.artistName, this.artistEmail, this.artistDPURL, this.artistType, this.artistBio, this.artistCountry, this.singleUploads, this.albumUploads);
 }

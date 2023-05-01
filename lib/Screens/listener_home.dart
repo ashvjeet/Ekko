@@ -1,3 +1,4 @@
+import 'package:ekko/Models/playlist.dart';
 import 'package:ekko/Screens/app.dart';
 import 'package:ekko/Screens/song_info.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ekko/Models/artists.dart';
 import 'package:ekko/Screens/artist_profile.dart';
+import 'package:ekko/Services/playlist_operations.dart';
+import 'package:ekko/Screens/playlist_page.dart';
 
 class ListenerHome extends StatefulWidget {
   Function setStateOfPlayer;
@@ -26,7 +29,7 @@ class _ListenerHomeState extends State<ListenerHome> {
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('listeners');
   final int maxStackSize = 10;
   
-  Widget displayCarousel(){
+  Widget displayCarousel() {
     return Padding(
       padding: const EdgeInsets.only(left: 25, right: 20, bottom: 10),
       child: Material(
@@ -70,7 +73,7 @@ class _ListenerHomeState extends State<ListenerHome> {
     );
   }
 
-  Widget displayArtistTile(BuildContext context, Artist artist){
+  Widget displayArtistTile(BuildContext context, Artist artist) {
     return Padding(
       padding: EdgeInsets.only(top: 5, left: 5, right: 5),
       child: Column(
@@ -84,7 +87,7 @@ class _ListenerHomeState extends State<ListenerHome> {
             width: 115,
             child: InkWell(
               onTap: () {
-                Navigator.of(context).pushNamed('/artist-profile',arguments: artist);
+                Navigator.of(context).pushNamed('/artist-profile', arguments: artist);
               },
               onLongPress: () {
 
@@ -114,7 +117,8 @@ class _ListenerHomeState extends State<ListenerHome> {
             width: 100,
             child: Text(artist.artistName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),)),
         ),
-      ],),
+        ],
+      ),
     );
   }
 
@@ -153,8 +157,82 @@ class _ListenerHomeState extends State<ListenerHome> {
     );
   }
 
+  Widget displayPlaylistTile(BuildContext context, Playlist playlist) {
+    return Padding(
+      padding: EdgeInsets.only(top: 5, left: 5, right: 5),
+      child: Column(
+        children: [
+          Material(
+            color: Colors.transparent,
+            elevation: 8,
+            child: Container(
+              height: 115,
+              width: 115,
+              child: ClipRRect(
+                clipBehavior: Clip.antiAlias,
+                borderRadius: BorderRadius.circular(10),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushNamed('/playlist-page', arguments: playlist);
+                  },
+                  child: Image.network(
+                    playlist.playlistArtURL, 
+                    fit: BoxFit.cover,
+                  )
+                )
+              )
+            ),
+          ),
+          Container(
+            width: 100,
+            child: Text(
+              playlist.playlistName, 
+              style: TextStyle(
+                fontWeight: FontWeight.bold, 
+                fontSize: 13
+              ),
+            )
+          ),
+        ],
+      ),
+    );
+  }
 
-  
+  Future<Widget> displayPlaylistGroup(String Label, String orderByFieldName, bool descendingOrder) async {
+    List<Playlist> playlists = await PlaylistOperations.getPlaylists(orderByFieldName, descendingOrder);
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.only(
+            left: 30
+          ),
+          alignment: Alignment.topLeft,
+          child: Text(
+            Label, 
+            style: TextStyle(
+              fontSize: 16, 
+              fontWeight: FontWeight.bold
+            ),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(
+            left: 20, 
+            right: 20
+          ),
+          height: 185, 
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index){
+              return displayPlaylistTile(context, playlists[index]);
+            },
+            itemCount: playlists.length,
+          ),
+        ),
+      ],
+    );
+  }
+
 
   Widget displaySongTile(BuildContext context, Song song) {
     return Padding(
@@ -341,6 +419,24 @@ class _ListenerHomeState extends State<ListenerHome> {
                             }
                           },
                         ),
+                        FutureBuilder<Widget>(
+                          future: displayPlaylistGroup('Hot Playlists','playlist_total_plays',false),
+                          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data!;
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.only(top:185),
+                                child: Center(
+                                  child: SpinKitThreeBounce(
+                                  color: Colors.teal,
+                                  size: 25.0,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
                       ]
                     ),
                     decoration: BoxDecoration(
@@ -367,6 +463,12 @@ class _ListenerHomeState extends State<ListenerHome> {
             final args = settings.arguments;
             return MaterialPageRoute(
               builder: (context) => SongInfoPage(setStateOfPlayer: widget.setStateOfPlayer, song: args as Song)
+            );
+          }
+          else if (settings.name == '/playlist-page') {
+            final args = settings.arguments;
+            return MaterialPageRoute(
+              builder: (context) => PlaylistPage(setStateOfPlayer: widget.setStateOfPlayer, playlist: args as Playlist)
             );
           }
           return null;
