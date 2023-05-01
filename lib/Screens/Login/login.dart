@@ -191,12 +191,12 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   Future<String> retrieveDynamicLink() async {
 
     Uri? deepLink;
-    final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
-
-    if(data != null) {
-      deepLink = data.link;
-      link = deepLink.toString();
-    }
+    // final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
+    
+    // if(data != null) {
+    //   deepLink = data.link;
+    //   link = deepLink.toString();
+    // }
 
     FirebaseDynamicLinks.instance.onLink.listen(
       (pendingDynamicLinkData) async {
@@ -251,12 +251,6 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final snackBarEmailSent = SnackBar(
-      content: Text('Email Sent!')
-      );
-    final snackBarEmailNotSent = SnackBar(
-      content: Text('Email Not Sent. Error.'),
-    );
     Size deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
@@ -373,8 +367,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                                 ),
                                 child: customButton('LOG IN', () async { 
                                   await checkEmailExistsValidateAndSave()
-                                  ? ScaffoldMessenger.of(context).showSnackBar(snackBarEmailSent)
-                                  : ScaffoldMessenger.of(context).showSnackBar(snackBarEmailNotSent);
+                                  ? ScaffoldMessenger.of(context).showSnackBar(showCustomSnackBar('Email sent Successfully', 2))
+                                  : ScaffoldMessenger.of(context).showSnackBar(showCustomSnackBar('Error sending Email', 2));
                                 }
                                 ),
                               ),

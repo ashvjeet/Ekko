@@ -8,8 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ekko/Screens/Login/signup.dart';
 import 'package:ekko/Services/song_operations.dart';
 
-
-
 class LikedSongs extends StatefulWidget {
   const LikedSongs({required this.setStateOfPlayer, super.key});
   final Function setStateOfPlayer;

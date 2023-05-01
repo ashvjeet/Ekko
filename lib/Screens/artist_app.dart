@@ -43,7 +43,6 @@ class _ArtistTabState extends State<ArtistTab> {
   }
 }
 
-
 class MinimizedPlayer extends StatefulWidget {
   static Song? song = null;
   static bool setState = false;
